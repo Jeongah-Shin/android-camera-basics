@@ -1,17 +1,20 @@
 package ai.clova.edgedetector
 
+import ai.clova.edgedetector.camera.Camera2BasicFragment
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class CameraActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-    // Example of a call to a native method
-    sample_text.text = stringFromJNI()
+        setContentView(R.layout.activity_camera)
+        if (null == savedInstanceState) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.container, Camera2BasicFragment.newInstance())
+                .commit()
+        }
     }
 
     /**
