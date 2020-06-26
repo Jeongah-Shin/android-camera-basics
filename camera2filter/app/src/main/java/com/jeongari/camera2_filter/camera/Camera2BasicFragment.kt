@@ -3,6 +3,7 @@ package com.jeongari.camera2_filter.camera
 import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.*
@@ -11,6 +12,7 @@ import android.media.ImageReader
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
+import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
 import android.view.LayoutInflater
@@ -18,13 +20,17 @@ import android.view.Surface
 import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.jeongari.camera2_filter.R
+import com.jeongari.camera2_filter.ResultActivity
+import java.io.ByteArrayOutputStream
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.Collections
@@ -47,6 +53,9 @@ class Camera2BasicFragment : Fragment(), ActivityCompat.OnRequestPermissionsResu
 
     private var runDetector = false
     private var isFacingFront: Boolean = true
+
+    private var buttonCapture : Button?=  null
+    val REQUEST_IMAGE_CAPTURE = 1
 
     /**
      * [TextureView.SurfaceTextureListener] handles several lifecycle events on a [ ].
@@ -237,7 +246,18 @@ class Camera2BasicFragment : Fragment(), ActivityCompat.OnRequestPermissionsResu
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         textureView = view?.findViewById(R.id.textureView)
         layoutFrame = view?.findViewById(R.id.layoutFrame)
-        tvState = view?.findViewById(R.id.tvState)
+        buttonCapture = view?.findViewById(R.id.buttonCapture)
+        buttonCapture?.setOnClickListener {
+            val imageBitmap = textureView!!.getBitmap(300, 400)
+            val stream = ByteArrayOutputStream()
+            imageBitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            val byteArray = stream.toByteArray()
+
+            val intent = Intent(context!!, ResultActivity::class.java)
+            intent.putExtra("pic", byteArray)
+            startActivity(intent)
+            true
+        }
     }
 
     override fun onResume() {
